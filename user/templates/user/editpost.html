@@ -1,0 +1,164 @@
+{% extends 'user/base.html' %}
+{% block title %}Homepage{% endblock %}
+{% block extra_js %}
+  {% load static %}
+
+ <script src="{% static 'js/input-tag.js' %}"></script>
+
+<script type="text/javascript">
+    $(document).on('click','#deletebutton',function(){
+        if(confirm("Do you really want to delete it?"))
+            document.forms[1].submit();
+        else
+            return false;
+
+    });
+</script>
+
+
+{% endblock %}
+{% block body %}
+
+<div class="container-fluid" align="center">
+
+ <div class="row">
+
+        	<div class="col-md-3">
+        	</div>
+        <div class="col-md-6">
+
+
+            <div class="panel panel-default" >
+                   
+                <div class="panel-body" align="center">
+                    
+                    {% if error_message %}
+                        <p><strong>{{ error_message }}</strong></p>
+                    {% endif %}
+                          </br>
+            </br>
+            
+                    <form class="form-horizontal" role="form" action="{% url 'user:savepost' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        
+                          <div class="form-group">
+                            <label class="control-label col-sm-2" for="title">
+                                Author:<span style="color: red">*</span>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" value="{{author}}" data-role="tagsinput" name="author" placeholder="Add Author"/>
+                            </div>
+                        </div>
+
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-2" for="title">
+                                Title:<span style="color: red">*</span>
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.title}}<p><strong id="duplicates" class="bg-danger"></strong></p>
+                            </div>
+                        </div>
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-2" for="abstract">
+                                Abstract:
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.abstract}}
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="abstract">
+                                Publisher:
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.publisher}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="branch">
+                                Branch:
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.branch}}
+                            </div>
+                        </div>
+
+                          <div class="form-group">
+                            <label class="control-label col-sm-2" for="document">
+                                Document:<span style="color: red">*</span>
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.document}}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-sm-2" for="visibilty">
+                                Protection:
+                            </label>
+                            <div class="col-sm-10">
+                                {{form.visibilty}}
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label class="control-label col-sm-2" for="doc_id">
+                               
+                            </label>
+                            <div class="col-sm-10" style="display: none;">
+                               <input type="text" name="doc_id" value="{{id}}">
+                            </div>
+                        </div>
+                        
+                         <div class="form-group">
+                            <label class="control-label col-sm-2" for="author">
+                                Tags:
+                            </label>
+                            <div class="col-sm-10">
+                          
+                      <input type="text" value="{{tags}}" data-role="tagsinput" name="tags" placeholder="Add Tags"/>
+                       
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                                   <label class="control-label col-sm-2" for="labels">
+                              Folder:
+                            </label>
+                                 <div class="col-sm-10">
+                                  
+                              <select  name="labels">
+                              {% for item in labels%}
+                              <option>{{item.label}}</option>
+                              {% endfor %}
+                                
+                              </select>
+                                 </div>
+                        </div>
+
+                        <div class="form-group">
+
+
+                            <div class="col-sm-offset-2 col-sm-10">
+                                        <a  class="btn btn-danger" id="deletebutton" href="{% url 'user:delete_doc' id %}">
+            Delete
+            </a>
+            &nbsp;&nbsp;&nbsp;
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

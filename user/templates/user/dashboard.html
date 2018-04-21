@@ -1,0 +1,213 @@
+{% extends 'user/base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_js %}
+
+
+<script type="text/javascript">
+  $('#download_btn').on('click',function(){
+
+  });
+</script>
+<!-- script to load the dashboard according to search query -->
+<script type="text/javascript">
+
+$( document ).ready( function() {
+ $('#q').keyup(function () {
+      var text = $(this).val();
+      var search=$('#search_option').val();
+      if(text!='')
+      $.ajax({
+        url: "{% url 'user:ajaxdashboard' %}",
+        data: {
+          'q': text,
+          'option':search
+        },
+        dataType: 'json',
+        success: function (data) {
+          var answer=data['hi']
+         // alert(answer);
+          $( '#results' ).html( answer);
+        }
+      });
+
+    });
+ });
+
+</script>
+
+
+{% endblock %}
+
+
+{% block body %}
+
+
+<form method="post">
+
+   
+    
+        {% csrf_token %}
+   
+   <div class="form-group">
+     <div class="col-sm-9">
+    
+        <input id="q" type="text" class="form-control" name="msg" placeholder="Search by Title">
+     </div>
+     <div class="col-sm-3">
+      
+  <select class="form-control" id="search_option" placeholder="Select Search option">
+    <option>By Title</option>
+    <option>By Author</option>
+    <option>By Tag</option>
+    
+  </select>
+     </div>
+   </div>
+
+  
+</form>
+
+
+
+<script type="text/javascript">
+$(document).off('click').on('click','#btn',function(){
+var mode= $(this).find(':first-child').text();
+
+var document_id= $(this).find(':first-child').next().text();
+
+
+    if($(this).find(':first-child').text().trim() == 'PUBLIC' ){
+      $(this).attr('class','btn btn-danger');
+        $(this).find(':first-child').text('PRIVATE');
+    }else{
+    
+        $(this).attr('class','btn btn-success');
+   $(this).find(':first-child').text('PUBLIC');
+    }      
+        $.ajax({
+        url: "{% url 'user:toggle' %}",
+        data: {
+          'mode':mode,
+          'document_id':document_id,
+        },
+        dataType: 'json',
+        success: function (data) {
+        
+        }
+      });
+});
+</script>
+
+
+
+
+
+   <div class="margin">
+        <div id="results">
+          
+<!-- if this is the result without the ajax call in search bar
+ -->
+{% if not ajax%}
+
+
+
+<div class="col-md-2">
+</div>
+
+<div class="col-md-8">
+  {% if alert is  not None %}
+
+<div class="alert alert-success alert-dismissible">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>Hurry!</strong> File Successfully uploaded.
+</div>
+
+
+{% endif %}
+<div class="list-group">
+  {%for item in results %}
+
+   
+
+    <div  class="list-group-item list-group-item-action flex-column  ">
+        <div class="row">
+          <div class="col-md-6"> 
+            <span >
+              <a href="{{ item.document.url }}"  style="text-decoration:none">&nbsp;&nbsp;&nbsp;
+                <b>{{item.title}}
+                </b>
+              </a>
+            </span>
+          </div>
+        <div class="col-md-6">  <small class="pull-right" >{{item.created_on}}</small>
+        </div>
+      </div>
+      </br>
+      <small class="text-muted">{{item.author}}</small>
+      </br>
+
+
+      <small class="text-muted">{{item.publisher}}</small>
+      {% if item.publisher %}
+      </br>
+      {% endif %}
+
+      <p class="mb-1">{{ item.branch|slice:":40"}}</p>
+      <div class="row">
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          &nbsp;&nbsp;&nbsp;
+
+      <a  id="btn" data-toggle='tooltip' 
+      title="Private Documents will not be visible in other Users search results"
+      {%if item.visibilty == 'PUBLIC' %}
+       class="btn btn-success" 
+       {% else %}
+       class="btn btn-danger" 
+       {% endif %}
+       >
+      <div >{{item.visibilty}}</div>
+        <div  style=" display: none"  >{{item.id}}</div>
+  
+    </a>
+    </div>
+     
+    <div class=" col-lg-3 col-md-6 col-sm-6">
+
+          <input type="text" name="doc_id" style=" display: none"  value={{item.id}}>
+        <a  href="{% url 'user:editpost' item.id %}" class="btn btn-primary">Edit</a>
+        
+   
+    </div>
+     <div class=" col-lg-3 col-md-6 col-sm-6">
+
+            
+        <a id="download_btn" href="{% url 'user:download' item.id %}" class="btn btn-primary">
+        Download
+         </a>
+        
+   
+    </div>
+  
+    <div class=" col-lg-3 col-md-6 col-sm-6">
+      
+      <span ><b class="text-info">Download Count</b>: {{item.downloads}}</span>
+    </div>
+  </div>
+  </div>
+    
+{%endfor%}
+</div>
+<div class="col-md-2">
+</div>
+{% endif %}
+
+
+
+
+        </div>
+    </div>
+
+{% endblock %}
+

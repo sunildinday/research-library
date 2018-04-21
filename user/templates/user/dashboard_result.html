@@ -1,0 +1,92 @@
+<!-- To show the search query result in dashboard page   --> 
+
+    {% block extra_js %}
+
+ 
+ 
+
+   {% endblock %}
+
+
+<div class="col-md-2">
+</div>
+
+<div class="col-md-8">
+  
+<div class="list-group">
+  {%for item in results %}
+
+   
+    <div  class="list-group-item list-group-item-action flex-column  ">
+        <div class="row">
+          <div class="col-md-6"> 
+            <span >
+              <a href="{{ item.document.url }}"  style="text-decoration:none">&nbsp;&nbsp;&nbsp;
+                <b>{{item.title}}
+                </b>
+              </a>
+            </span>
+          </div>
+        <div class="col-md-6">  <small class="pull-right" >{{item.created_on}}</small>
+        </div>
+      </div>
+      </br>
+      <small class="text-muted">{{item.author|title}}</small>
+      </br>
+
+
+      <small class="text-muted">{{item.publisher}}</small>
+      {% if item.publisher %}
+      </br>
+      {% endif %}
+
+      <p class="mb-1">{{ item.branch|slice:":40"}}</p>
+      <div class="row">
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+          &nbsp;&nbsp;&nbsp;
+
+      <a  id="btn" data-toggle='tooltip' 
+      title="Private Documents will not be visible in other Users search results"
+      {%if item.visibilty == 'PUBLIC' %}
+       class="btn btn-success" 
+       {% else %}
+       class="btn btn-danger" 
+       {% endif %}
+       >
+      <div >{{item.visibilty}}</div>
+        <div  style=" display: none"  >{{item.id}}</div>
+  
+    </a>
+    </div>
+     
+    <div class=" col-lg-3 col-md-6 col-sm-6">
+
+          <input type="text" name="doc_id" style=" display: none"  value={{item.id}}>
+        <a  href="{% url 'user:editpost' item.id %}" class="btn btn-primary">Edit</a>
+        
+   
+    </div>
+     <div class=" col-lg-3 col-md-6 col-sm-6">
+
+            
+        <a  href="{% url 'user:download' item.id %}" class="btn btn-primary">
+        Download
+         </a>
+        
+   
+    </div>
+  
+    <div class=" col-lg-3 col-md-6 col-sm-6">
+      
+      <span ><b class="text-info">Download Count</b>: {{item.downloads}}</span>
+    </div>
+  </div>
+  </div>
+    
+{%endfor%}
+</div>
+<div class="col-md-2">
+</div>
+
+

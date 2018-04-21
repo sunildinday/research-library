@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>{% block title %}Student{% endblock %}</title>
+    {% load static %}
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'  type='text/css'>
+    <link  rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'user/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap-tagsinput-latest/src/bootstrap-tagsinput.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+   
+    
+    <link href="{% static 'css/bootstrap.css ' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
+  
+    {% block extra_js %}
+
+    {% endblock %}
+
+
+
+
+</head>
+
+<body>
+<nav class="navbar navbar-inverse">
+    <div clas="container-fluid">
+
+      
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topNavBar">
+                <span class="icon-bar">hi</span>
+                <span class="icon-bar">hi</span>
+                <span class="icon-bar">hi</span>
+            </button>
+         
+        </div>
+
+    
+        <div class="collapse navbar-collapse" id="topNavBar">
+            <ul class="nav navbar-nav">
+                 <li><a href="{% url 'user:dashboard_folder'%}">Dashboard</a></li>
+                   <li> <a class="navbar-brand" href="{% url 'user:index' %}">Submit</a></li>
+                              
+                <li><a href="{% url 'user:search' %}">Search</a></li>
+                 <li><a href="{% url 'user:about' %}">About</a></li>
+       
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="{% url 'user:logout_user' %}">
+                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp; Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+{% block body %}
+{% endblock %}
+ <script src="{% static 'js/bootstrap-transition.js' %}"></script>
+    <script src="{% static 'js/bootstrap-alert.js' %}"></script>
+    <script src="{% static 'js/bootstrap-modal.js' %}"></script>
+    <script src="{% static 'js/bootstrap-dropdown.js' %}"></script>
+    <script src="{% static 'js/bootstrap-scrollspy.js' %}"></script>
+    <script src="{% static 'js/bootstrap-tab.js' %}"></script>
+    <script src="{% static 'js/bootstrap-tooltip.js' %}"></script>
+    <script src="{% static 'js/bootstrap-popover.js' %}"></script>
+    <script src="{% static 'js/bootstrap-button.js' %}"></script>
+    <script src="{% static 'js/bootstrap-collapse.js' %}"></script>
+    <script src="{% static 'js/bootstrap-carousel.js' %}"></script>
+    <script src="{% static 'js/bootstrap-typeahead.js' %}"></script>
+    <script src="{% static 'bootstrap-tagsinput-latest/src/bootstrap-tagsinput.js' %}"></script>
+    
+</body>
+</html>

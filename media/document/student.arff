@@ -1,0 +1,14 @@
+@relation student
+
+@attribute name string
+@attribute roll numeric
+@attribute age numeric
+@attribute habbit {good,bad}
+
+
+@data
+sunil,1,22,good
+nitish,2,21,bad
+srv,3,20,bad
+rahul,4,21,good
+
