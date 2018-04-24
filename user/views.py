@@ -58,7 +58,7 @@ def index(request):
             if len(label) == 0:
                 error = 'First go to dashbooard and create a folder'
 
-            return render(request, 'user/home.html', {'form': form, 'labels': label, 'error_msg': error, })
+            return render(request, 'user/submit.html', {'form': form, 'labels': label, 'error_msg': error, })
     else:
         return render(request, 'user/login.html')
 
@@ -180,7 +180,7 @@ def dashboard(request, label):
 
     except:
         document = None
-    return render(request, 'user/dashboard.html', {'results': document, 'author': authors_data, 'user': user_id, 'alert': alert})
+    return render(request, 'user/dashboard.html', {'results': document, 'author': authors_data, 'user': user_id, 'alert': alert, 'label': label})
 
 
 @csrf_protect
@@ -189,23 +189,21 @@ def ajax_dashboard(request):
     if request.is_ajax():
         q = request.GET.get('q')
         search_by = request.GET.get('option')
+        label = request.GET.get('label')
         user_id = request.user.id
-        print(user_id)
         if q == "":
             q = "!#!B(IOSDOJI@!(*SOSasdndjsaoi j2u90usadsa d -sdusad 00828y0ds d0sysya d0say d0syd"
         try:
             if(search_by == "By Title"):
-                document = Documents.objects.filter(Q(title__icontains=q) & Q(user_id__icontains=user_id))
+                document = Documents.objects.filter(Q(title__icontains=q) & Q(user_id__icontains=user_id) & Q(folder_label=label))
                 #document = Documents.objects.get_by_title_and_id(q, user_id)
             elif(search_by == "By Author"):
-                document = Documents.objects.filter(user_id__icontains=user_id)
+                document = Documents.objects.filter(Q(user_id__icontains=user_id) & Q(folder_label=label))
                 ans = []
-                print(document)
                 for doc in document:
                     qs = Authors.objects.filter(document=doc).filter(author__icontains=q).count()
                     if qs >= 1:
                         ans.append(doc)
-                print(ans)
                 document = ans
         except:
             document = None
@@ -388,6 +386,7 @@ def delete_doc(request, post_id):
     return render_to_response('user/done.html', {'msg': "Deleted"}, RequestContext(request))
 
 
+# check for duplicate folder name
 def check_label(request):
     if request.is_ajax():
         label = request.GET.get('q')
@@ -400,6 +399,8 @@ def check_label(request):
             msg = {'data': "false"}
 
         return JsonResponse(msg)
+
+# used to create a new folder
 
 
 def create_label(request):

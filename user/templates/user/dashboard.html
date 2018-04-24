@@ -21,7 +21,8 @@ $( document ).ready( function() {
         url: "{% url 'user:ajaxdashboard' %}",
         data: {
           'q': text,
-          'option':search
+          'option':search,
+          'label':"{{label}}",
         },
         dataType: 'json',
         success: function (data) {
