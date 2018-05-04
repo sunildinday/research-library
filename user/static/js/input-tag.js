@@ -662,7 +662,7 @@ $( document ).ready( function() {
         url: "{% url 'user:checker' %}",
         data: {
           'title': title,
-          'author':author
+          
         },
         dataType: 'json',
         success: function (data) {
