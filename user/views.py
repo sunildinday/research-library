@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
-#from django.core.urlresolvers import reverse
+# from django.core.urlresolvers import reverse
 from .forms import UserRegistrationForm
 from .forms import UserLoginForm
 from .forms import DocumentForm
@@ -14,7 +14,7 @@ from django.http import JsonResponse
 from django.template import RequestContext
 import os
 from django.conf import settings
-#from user.forms import UserRegistrationForm
+# from user.forms import UserRegistrationForm
 
 # used to submit the document
 
@@ -123,20 +123,37 @@ def search(request):
 @login_required
 def query(request):
     if request.user.is_authenticated():
-        author = request.GET['author']
-        title = request.GET['title']
-        user_id = request.user.id
-        if author == "":
-            author = "#@!@#$@@!@!@!@!@@ sadbhias hdsai dhias dhasui hdius"
-        if title == "":
-            title = "#@!@#$@@!@!@!@!@@ sdad sad sadsad sadsadsad"
-        results = Documents.objects.filter((Q(title__icontains=title) | Q(author__icontains=author)) & Q(visibilty='PUBLIC') & (~Q(user_id=user_id)))
-        # results=Document.objects.all()
+        q = request.GET['q']
+        search_by = request.GET['search_option']
+        if q == "":
+            q = "!#!B(IOSDOJI@!(*SOSasdndjsaoi j2u90usadsa d -sdusad 00828y0ds d0sysya d0say d0syd"
+        try:
+            if(search_by == "By Title"):
+                document = Documents.objects.filter(Q(title__icontains=q) & Q(visibilty="PUBLIC"))
+                # document = Documents.objects.get_by_title_and_id(q, user_id)
+            elif(search_by == "By Author"):
+                document = Documents.objects.filter(visibilty="PUBLIC")
+                ans = []
+                for doc in document:
+                    qs = Authors.objects.filter(document=doc).filter(author__icontains=q).count()
+                    if qs >= 1:
+                        ans.append(doc)
+                document = ans
+            else:
+                document = Documents.objects.filter(visibilty="PUBLIC")
+                ans = []
+                for doc in document:
+                    qs = KeyWord.objects.filter(document=doc).filter(key__icontains=q).count()
+                    if qs >= 1:
+                        ans.append(doc)
+                document = ans
+        except:
+            document = None
 
-        if not results:
+        if not document:
             msg = "Empty Search Result"
-            return render(request, 'user/query.html', {'results': results, 'msg': msg})
-        return render(request, 'user/query.html', {'results': results, })
+            return render(request, 'user/query.html', {'results': document, 'msg': msg})
+        return render(request, 'user/query.html', {'results': document, })
     else:
         return render(request, 'user/login.html')
 
@@ -196,12 +213,20 @@ def ajax_dashboard(request):
         try:
             if(search_by == "By Title"):
                 document = Documents.objects.filter(Q(title__icontains=q) & Q(user_id__icontains=user_id) & Q(folder_label=label))
-                #document = Documents.objects.get_by_title_and_id(q, user_id)
+                # document = Documents.objects.get_by_title_and_id(q, user_id)
             elif(search_by == "By Author"):
                 document = Documents.objects.filter(Q(user_id__icontains=user_id) & Q(folder_label=label))
                 ans = []
                 for doc in document:
                     qs = Authors.objects.filter(document=doc).filter(author__icontains=q).count()
+                    if qs >= 1:
+                        ans.append(doc)
+                document = ans
+            else:
+                document = Documents.objects.filter(Q(user_id__icontains=user_id) & Q(folder_label=label))
+                ans = []
+                for doc in document:
+                    qs = KeyWord.objects.filter(document=doc).filter(key__icontains=q).count()
                     if qs >= 1:
                         ans.append(doc)
                 document = ans

@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^logout_user/$', views.logout_user, name='logout_user'),
     url(r'^search/$', views.search, name='search'),
     url(r'^query/$', views.query, name='query'),
-    url(r'^homes/(?P<label>[\w]+)/$', views.dashboard, name='dashboard'),
+    url(r'^homes/(?P<label>[a-zA-z0-9_ ]+)/$', views.dashboard, name='dashboard'),
     url(r'^homes/$', views.dashboard_folder, name='dashboard_folder'),
     url(r'^ajaxdashboard/$', views.ajax_dashboard, name='ajaxdashboard'),
     url(r'^ajaxtoggle/$', views.toggle, name='toggle'),
@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^delete_doc/(?P<post_id>[0-9]+)/$', views.delete_doc, name='delete_doc'),
     url(r'^checklabel/$', views.check_label, name='check_label'),
     url(r'^createlabel/$', views.create_label, name='create_label'),
-    url(r'^editlabel/(?P<label>[\w]+)/$', views.edit_folder, name='edit_folder'),
+    url(r'^editlabel/(?P<label>[a-zA-z0-9_ ]+)/$', views.edit_folder, name='edit_folder'),
     url(r'^authanticate_delete/$', views.authenticates, name='authenticates'),
 
 ]
