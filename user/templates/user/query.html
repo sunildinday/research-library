@@ -2,44 +2,56 @@
 {% block title %}Homepage{% endblock %}
 
 {% block body %}
+
 <div class="container-fluid">
     <div class="row">
             
 
-            <div class="col-md-3">
-            </div>
-            <div class="col-md-6">
-            
+          <div class="col-md-3">
+          </div>
+          <div class="col-md-6">
+          
 
             <div class="panel panel-default">
                 <div class="panel-body" align="center">
                     <h3 align="center">Search</h3>
+                    <h5 class="text-warning">Search result will be OR operation of all the fields</h5>
                     {% if error_message %}
                         <p><strong>{{ error_message }}</strong></p>
                     {% endif %}
                   <form  method="GET" action="{% url 'user:query' %}">
     
         {% csrf_token %}
-   
-   <div class="form-group" >
-     <div class="col-sm-9">
-    
-        <input id="q" type="text" class="form-control" name="q" placeholder="Search by Title">
-     </div>
-     <div class="col-sm-3">
-      
-  <select class="form-control" id="search_option" name="search_option" placeholder="Select Search option">
-    <option>By Title</option>
-    <option>By Author</option>
-    <option>By Tag</option>
-    
-  </select>
-     </div>
-   </div>
-<br>
-<br>
-<br>
+ <div class="form-group">
+                            <label class="control-label col-md-2" for="title">
+                                Title:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="title">
+                            </div>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;OR
 
+ <div class="form-group">
+                            <label class="control-label col-md-2" for="author">
+                                author:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="author">
+                            </div>
+                        </div>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; OR
+                         <div class="form-group">
+                            <label class="control-label col-md-2" for="tag">
+                                Keyword:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="tag">
+                            </div>
+                        </div>
+                        <br>
+                       
+                        
 <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="submit" class="btn btn-success">Search</button>
@@ -52,7 +64,7 @@
             </div>
         </div>
             <div class="col-md-3">
-            </div>
+          </div>
 
 
 
@@ -94,6 +106,11 @@
       <small class="text-muted">{{item.author|title}}</small>
       </br>
 
+ </br>
+      {% if item.tag %}
+      <small><strong>Keywords</strong>:{{item.tag}}</small>
+      <br>
+      {%endif %}
 
       <small class="text-muted">{{item.publisher}}</small>
       {% if item.publisher %}
@@ -106,28 +123,11 @@
         <div class="col-lg-3 col-md-6 col-sm-6">
           &nbsp;&nbsp;&nbsp;
 
-      <a  id="btn" data-toggle='tooltip' 
-      title="Private Documents will not be visible in other Users search results"
-      {%if item.visibilty == 'PUBLIC' %}
-       class="btn btn-success" 
-       {% else %}
-       class="btn btn-danger" 
-       {% endif %}
-       >
-      <div >{{item.visibilty}}</div>
-        <div  style=" display: none"  >{{item.id}}</div>
   
-    </a>
     </div>
      
-    <div class=" col-lg-3 col-md-6 col-sm-6">
-
-          <input type="text" name="doc_id" style=" display: none"  value={{item.id}}>
-        <a  href="{% url 'user:editpost' item.id %}" class="btn btn-primary">Edit</a>
-        
    
-    </div>
-     <div class=" col-lg-3 col-md-6 col-sm-6">
+     <div class=" col-lg-3 col-md-6 col-sm-6  pull-left">
 
             
         <a  href="{% url 'user:download' item.id %}" class="btn btn-primary">
@@ -137,7 +137,7 @@
    
     </div>
   
-    <div class=" col-lg-3 col-md-6 col-sm-6">
+    <div class=" col-lg-3 col-md-6 col-sm-6 pull-right">
       
       <span ><b class="text-info">Download Count</b>: {{item.downloads}}</span>
     </div>

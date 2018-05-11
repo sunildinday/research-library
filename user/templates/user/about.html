@@ -1,12 +1,8 @@
 {% extends 'user/base.html' %}
 {% block title %}Homepage{% endblock %}
-
+{% load static %}
 {% block body %}
 
-<div class="container-fluid">
-    <div class="jumbotron">
-        <h1>Hello {{ name }}!</h1>
-        <p>This is your dashboard.</p>
-    </div>
-</div>
+     <img src="{% static 'img/help.jpg' %}" style="width: 1200px" >
+
 {% endblock %}

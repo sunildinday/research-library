@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 # from user.forms import UserRegistrationForm
 # Create your models here.
 
@@ -24,6 +25,12 @@ from django.db.models import Q
 
 class Documents(models.Model):
 
+    def validate_file_extension(value):
+        import os
+        ext = os.path.splitext(value.name)[1]
+        valid_extensions = ['.pdf', '.doc', '.docx']
+        if not ext in valid_extensions:
+            raise ValidationError(u'File not supported!')
     user_id = models.IntegerField(null=False, default=1)
     title = models.CharField(max_length=255, blank=False,)
     abstract = models.TextField(max_length=500, blank=True)

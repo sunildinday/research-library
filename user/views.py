@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 # from django.core.urlresolvers import reverse
 from .forms import UserRegistrationForm
 from .forms import UserLoginForm
@@ -14,6 +15,11 @@ from django.http import JsonResponse
 from django.template import RequestContext
 import os
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.shortcuts import render, redirect
+from user.utils import get_by_author, get_by_keyword, get_keywords
 # from user.forms import UserRegistrationForm
 
 # used to submit the document
@@ -47,13 +53,17 @@ def index(request):
                     writer.save()
                 request.session['alert'] = True
                 return HttpResponseRedirect(reverse('user:dashboard', kwargs={'label': label, }))
-                return render(request, 'user/done.html', {'msg': "Successfully Saved"},)
+            else:
+                form = DocumentForm()
+                user_id = request.user.id
+                label = Folder.objects.filter(user_id=user_id)
+                return render(request, 'user/submit.html', {'form': form, 'labels': label, 'error': "File not supported"})
         else:
             form = DocumentForm()
             user_id = request.user.id
             label = Folder.objects.filter(user_id=user_id)
             error = None
-            print("hiii")
+
             print(len(label))
             if len(label) == 0:
                 error = 'First go to dashbooard and create a folder'
@@ -107,7 +117,7 @@ def register_user(request):
                 login(request, user)
                 f = Folder(label="Books", user_id=user.id)
                 f.save()
-                return render(request, 'user/dashboard.html', {'name': username})
+                return HttpResponseRedirect(reverse('user:dashboard_folder'))
     return render(request, 'user/register.html', {'form': form})
 
 
@@ -131,14 +141,10 @@ def query(request):
             if(search_by == "By Title"):
                 document = Documents.objects.filter(Q(title__icontains=q) & Q(visibilty="PUBLIC"))
                 # document = Documents.objects.get_by_title_and_id(q, user_id)
+                document = get_by_keyword(document)
             elif(search_by == "By Author"):
                 document = Documents.objects.filter(visibilty="PUBLIC")
-                ans = []
-                for doc in document:
-                    qs = Authors.objects.filter(document=doc).filter(author__icontains=q).count()
-                    if qs >= 1:
-                        ans.append(doc)
-                document = ans
+                document = get_by_author(document, q)
             else:
                 document = Documents.objects.filter(visibilty="PUBLIC")
                 ans = []
@@ -146,7 +152,56 @@ def query(request):
                     qs = KeyWord.objects.filter(document=doc).filter(key__icontains=q).count()
                     if qs >= 1:
                         ans.append(doc)
-                document = ans
+                document = get_by_keyword(ans)
+        except:
+            document = None
+
+        if not document:
+            msg = "Empty Search Result"
+            return render(request, 'user/query.html', {'results': document, 'msg': msg})
+        return render(request, 'user/query.html', {'results': document, })
+    else:
+        return render(request, 'user/login.html')
+
+
+@login_required
+def query1(request):
+    if request.user.is_authenticated():
+
+        author = request.GET['author']
+        title = request.GET['title']
+        tag = request.GET['tag']
+        print("fuck" + author)
+        if author == "":
+            print("you")
+            author = "!#!B(IOSDOJI@!(*SOSasdndjsaoi j2u90usadsa d -sdusad 00828y0ds d0sysya d0say d0syd"
+        if title == "":
+            title = "!#!B(IOSDOJI@!(*SOSasdndjsaoi j2u90usadsa d -sdusad 00828y0ds d0sysya d0say d0syd"
+        if tag == "":
+            tag = "!#!B(IOSDOJI@!(*SOSasdndjsaoi j2u90usadsa d -sdusad 00828y0ds d0sysya d0say d0syd"
+
+        try:
+            titles = Documents.objects.filter(Q(title__icontains=title) & Q(visibilty="PUBLIC"))
+            print(titles)
+            titles = (get_by_keyword(titles))
+            authors = Documents.objects.filter(visibilty="PUBLIC")
+            authors = (get_by_author(authors, author))
+            tags = Documents.objects.filter(visibilty="PUBLIC")
+            ans = []
+            print(authors)
+            print(tag)
+            for doc in tags:
+                qs = KeyWord.objects.filter(document=doc).filter(key__icontains=tag).count()
+                if qs >= 1:
+                    ans.append(doc)
+            print(ans)
+            tags = (get_by_keyword(ans))
+
+            document = tags + titles + authors
+            document = set(document)
+            document = get_keywords(document)
+            print("hiiii")
+
         except:
             document = None
 
@@ -161,6 +216,7 @@ def query(request):
 @login_required
 def dashboard_folder(request):
     user_id = request.user.id
+    request.session["alert"] = False
     folder = Folder.objects.filter(user_id=user_id)
 
     for fold in folder:
@@ -180,11 +236,12 @@ def dashboard(request, label):
     alert = None
 
     try:
-
-        if request.session["alert"] == True:
+        print("why")
+        if request.session["alert"] is True:
+            print("yes")
             alert = "show"
             request.session["alert"] = False
-
+        print("what is this")
         document = Documents.objects.filter(Q(user_id=user_id) & Q(folder_label=label))
         authors_data = ["bye"]
         for docu in document:
@@ -193,9 +250,17 @@ def dashboard(request, label):
             for auth in authors:
                 auth_seq.append(auth.author)
             authors = ",".join(map(str, auth_seq))
+            tags = KeyWord.objects.all().filter(document=docu)
+            tag_seq = []
+            for tt in tags:
+                tag_seq.append(tt.key)
+            tags = ",".join(map(str, tag_seq))
+            docu.tag = tags
+
             docu.author = authors
 
     except:
+        print("fuck")
         document = None
     return render(request, 'user/dashboard.html', {'results': document, 'author': authors_data, 'user': user_id, 'alert': alert, 'label': label})
 
@@ -213,15 +278,11 @@ def ajax_dashboard(request):
         try:
             if(search_by == "By Title"):
                 document = Documents.objects.filter(Q(title__icontains=q) & Q(user_id__icontains=user_id) & Q(folder_label=label))
+                document = get_by_keyword(document)
                 # document = Documents.objects.get_by_title_and_id(q, user_id)
             elif(search_by == "By Author"):
                 document = Documents.objects.filter(Q(user_id__icontains=user_id) & Q(folder_label=label))
-                ans = []
-                for doc in document:
-                    qs = Authors.objects.filter(document=doc).filter(author__icontains=q).count()
-                    if qs >= 1:
-                        ans.append(doc)
-                document = ans
+                document = get_by_author(document, q)
             else:
                 document = Documents.objects.filter(Q(user_id__icontains=user_id) & Q(folder_label=label))
                 ans = []
@@ -229,11 +290,11 @@ def ajax_dashboard(request):
                     qs = KeyWord.objects.filter(document=doc).filter(key__icontains=q).count()
                     if qs >= 1:
                         ans.append(doc)
-                document = ans
+                document = get_by_keyword(ans, q)
         except:
             document = None
         ajax = True
-
+        document = get_keywords(document)
         html = (render(request, 'user/dashboard_result.html', {'results': document, 'ajax': ajax}).content).decode('utf-8')
 
         data = {'hi': html}
@@ -273,6 +334,7 @@ def bibtex(request):
 
         bibtex_str = str(files.read())
         post = {}
+        author = ""
         index1 = bibtex_str.find('title=')
         if index1 != -1:
             index2 = bibtex_str.find('}', index1)
@@ -281,7 +343,8 @@ def bibtex(request):
         index1 = bibtex_str.find('author=')
         if index1 != -1:
             index2 = bibtex_str.find('}', index1)
-            post['author'] = bibtex_str[index1 + 8:index2]
+            print(bibtex_str[index1 + 8:index2])
+            author = bibtex_str[index1 + 8:index2]
 
         index1 = bibtex_str.find('abstract=')
         if index1 != -1:
@@ -295,29 +358,46 @@ def bibtex(request):
             post['publisher'] = bibtex_str[index1 + 11:index2]
 
         form = DocumentForm(post)
+        label = Folder.objects.filter(user_id=request.user.id)
+        return render(request, 'user/submit.html', {'form': form, 'author': author, 'labels': label})
 
-        return render(request, 'user/home.html', {'form': form, })
 
+def check_username(request):
+    if request.is_ajax():
+        username = request.GET.get('username')
+        try:
+            user = User.objects.get(username__exact=username)
+            print(user)
+        except:
+            user = None
+        msg = {"msg": ""}
+        if user:
+            msg = {"msg": "username already exist"}
 
+        print(msg)
+        return JsonResponse(msg)
 # view to check for duplicates
+
+
 @login_required
 def checker(request):
     if request.is_ajax():
         title = request.GET.get('title')
-        author = request.GET.get('author')
-        if author == "":
-            author = "#@!@#$@@!@!@!@!@@ sadbhias hdsai dhias dhasui hdius"
+        folder = request.GET.get('folder')
+        user = request.user.id
+        if folder == "":
+            folder = "#@!@#$@@!@!@!@!@@ sadbhias hdsai dhias dhasui hdius"
         if title == "":
             title = "#@!@#$@@!@!@!@!@@ sdad sad sadsad sadsadsad"
         try:
-            document = Documents.objects.filter(Q(title__icontains=title) & Q(author__icontains=author))
+            document = Documents.objects.filter(Q(title__iexact=title) & Q(folder_label__icontains=folder) & Q(user_id=user))
 
         except:
             document = None
         msg = {'msg': "", }
 
         if document:
-            msg = {"msg": "Duplicate File with same author and title"}
+            msg = {"msg": "File with name " + title + " already exist in folder " + folder}
             # return JsonResponse(msg)
         return JsonResponse(msg)
 
@@ -473,3 +553,32 @@ def authenticates(request):
                 doc.delete()
             return HttpResponseRedirect(reverse('user:dashboard_folder'))
     return HttpResponseRedirect(reverse('user:logout_user'))
+
+
+@login_required
+def change_pass(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+
+            return HttpResponseRedirect(reverse('user:change_pass'))
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'user/changepass.html', {
+        'form': form
+    })
+
+
+def editprofile(request):
+    if request.method == "POST":
+        return HttpResponse("hi")
+    else:
+        form = get_object_or_404(User, id=request.user.id)
+        print(form)
+
+        return render(request, 'user/profile.html', {'form': form})

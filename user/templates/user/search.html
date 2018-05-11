@@ -14,32 +14,42 @@
             <div class="panel panel-default">
                 <div class="panel-body" align="center">
                     <h3 align="center">Search</h3>
+                    <h5 class="text-warning">Search result will be OR operation of all the fields</h5>
                     {% if error_message %}
                         <p><strong>{{ error_message }}</strong></p>
                     {% endif %}
                   <form  method="GET" action="{% url 'user:query' %}">
     
         {% csrf_token %}
-   
-   <div class="form-group" >
-     <div class="col-sm-9">
-    
-        <input id="q" type="text" class="form-control" name="q" placeholder="Search by Title">
-     </div>
-     <div class="col-sm-3">
-      
-  <select class="form-control" id="search_option" name="search_option" placeholder="Select Search option">
-    <option>By Title</option>
-    <option>By Author</option>
-    <option>By Tag</option>
-    
-  </select>
-     </div>
-   </div>
-<br>
-<br>
-<br>
+ <div class="form-group">
+                            <label class="control-label col-md-2" for="title">
+                                Title:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="title">
+                            </div>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;OR
 
+ <div class="form-group">
+                            <label class="control-label col-md-2" for="author">
+                                author:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="author">
+                            </div>
+                        </div>
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; OR
+                         <div class="form-group">
+                            <label class="control-label col-md-2" for="tag">
+                                Keyword:
+                            </label>
+                            <div class="col-md-10 tagsinput ">
+                               <input type="text" name="tag">
+                            </div>
+                        </div>
+                        <br>
+                        
 <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="submit" class="btn btn-success">Search</button>

@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^login_user/$', views.login_user, name='login_user'),
     url(r'^logout_user/$', views.logout_user, name='logout_user'),
     url(r'^search/$', views.search, name='search'),
-    url(r'^query/$', views.query, name='query'),
+    url(r'^query/$', views.query1, name='query'),
     url(r'^homes/(?P<label>[a-zA-z0-9_ ]+)/$', views.dashboard, name='dashboard'),
     url(r'^homes/$', views.dashboard_folder, name='dashboard_folder'),
     url(r'^ajaxdashboard/$', views.ajax_dashboard, name='ajaxdashboard'),
@@ -26,5 +26,8 @@ urlpatterns = [
     url(r'^createlabel/$', views.create_label, name='create_label'),
     url(r'^editlabel/(?P<label>[a-zA-z0-9_ ]+)/$', views.edit_folder, name='edit_folder'),
     url(r'^authanticate_delete/$', views.authenticates, name='authenticates'),
+    url(r'^password/$', views.change_pass, name='change_pass'),
+    url(r'^checkeruser/$', views.check_username, name='check_username'),
+
 
 ]

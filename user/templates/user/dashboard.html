@@ -144,10 +144,14 @@ var document_id= $(this).find(':first-child').next().text();
         <div class="col-md-6">  <small class="pull-right" >{{item.created_on}}</small>
         </div>
       </div>
-      </br>
-      <small class="text-muted">{{item.author}}</small>
-      </br>
 
+      </br>
+      <small class="text-muted"><strong>Authors</strong>:{{item.author}}</small>
+      </br>
+      {% if item.tag %}
+      <small><strong>Keywords</strong>:{{item.tag}}</small>
+      <br>
+      {%endif %}
 
       <small class="text-muted">{{item.publisher}}</small>
       {% if item.publisher %}
@@ -191,6 +195,9 @@ var document_id= $(this).find(':first-child').next().text();
    
     </div>
   
+
+     
+                                
     <div class=" col-lg-3 col-md-6 col-sm-6">
       
       <span ><b class="text-info">Download Count</b>: {{item.downloads}}</span>

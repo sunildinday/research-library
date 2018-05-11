@@ -26,6 +26,16 @@ class DocumentForm(forms.ModelForm):
 
         }
 
+    # def clean(self):
+    #     super(DocumentForm, self).clean()
+    #     import os
+    #     value = self.cleaned_data["document"]
+    #     ext = os.path.splitext(value.name)[1]
+    #     valid_extensions = ['.pdf', '.doc', '.docx']
+    #     if not ext in valid_extensions:
+    #         raise forms.ValidationError(u'File not supported!')
+    #     return value
+
 
 class UserRegistrationForm(forms.Form):
     name = forms.CharField(max_length=30, help_text='Full Name')

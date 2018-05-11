@@ -18,7 +18,7 @@
     
     <link href="{% static 'css/bootstrap.css ' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
+   <link href="{% static 'css/forms.css' %}" rel="stylesheet">
     <link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
   
     {% block extra_js %}
@@ -51,10 +51,17 @@
                    <li> <a class="navbar-brand" href="{% url 'user:index' %}">Submit</a></li>
                               
                 <li><a href="{% url 'user:search' %}">Search</a></li>
+              
                  <li><a href="{% url 'user:about' %}">About</a></li>
        
             </ul>
             <ul class="nav navbar-nav navbar-right">
+            <li><a><span>{{request.user.get_full_name|title}}</span>
+            </a></li>
+                <li>
+                    <a href="{% url 'user:change_pass' %}">
+                        <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp; Change Password</a>
+                </li>
                 <li>
                     <a href="{% url 'user:logout_user' %}">
                         <span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp; Logout</a>
@@ -80,6 +87,8 @@
     <script src="{% static 'js/bootstrap-collapse.js' %}"></script>
     <script src="{% static 'js/bootstrap-carousel.js' %}"></script>
     <script src="{% static 'js/bootstrap-typeahead.js' %}"></script>
+    <script src="{% static 'js/login.js' %}"></script>
+    
     <script src="{% static 'bootstrap-tagsinput-latest/src/bootstrap-tagsinput.js' %}"></script>
     
 </body>

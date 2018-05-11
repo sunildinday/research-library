@@ -33,7 +33,10 @@
       </br>
       <small class="text-muted">{{item.author|title}}</small>
       </br>
-
+ {% if item.tag %}
+      <small><strong>Keywords</strong>:{{item.tag}}</small>
+      <br>
+      {%endif %}
 
       <small class="text-muted">{{item.publisher}}</small>
       {% if item.publisher %}

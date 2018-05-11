@@ -3,6 +3,37 @@
 {% block register_active %}active{% endblock %}
 
 {% block body %}
+<script type="text/javascript">
+  
+  $( document ).ready( function() {
+ $('#id_username').keyup(function sendrequest () {
+      var title = $(this).val();
+    
+      if(title!='')
+      $.ajax({
+        url: "{% url 'user:check_username' %}",
+        data: {
+          'title': title,
+       
+          
+        },
+        dataType: 'json',
+        success: function (data) {
+          var answer=data['msg']
+         // alert(data['msg']);
+         //alert(answer);
+         //console.log(answer);
+          $('#duplicates').html( answer);
+        },
+        complete:function(){
+          
+        }
+      });
+
+    });
+ });
+
+</script>
 <div class="container-fluid">
     <div class="row">
         <div class=" col-md-3">
@@ -14,6 +45,7 @@
                     {% if error_message %}
                         <p><strong>{{ error_message }}</strong></p>
                     {% endif %}
+                    <div id="duplicates" style="color: red"></div>
                     <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {% include 'user/form_template.html' %}

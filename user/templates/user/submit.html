@@ -8,11 +8,39 @@
   {% load static %}
 
  <script src="{% static 'js/input-tag.js' %}"></script>
+
 <script type="text/javascript">
-    $('#id_documnet').on('change',function(){
-        $('#bibtex').click();
+  
+  $( document ).ready( function() {
+ $('#id_title').keyup(function sendrequest () {
+      var title = $(this).val();
+       var folder=$("#folder").val();
+      if(title!='')
+      $.ajax({
+        url: "{% url 'user:checker' %}",
+        data: {
+          'title': title,
+          'folder':folder,
+          
+        },
+        dataType: 'json',
+        success: function (data) {
+          var answer=data['msg']
+         // alert(data['msg']);
+         //alert(answer);
+         //console.log(answer);
+          $('#duplicates').html( answer);
+        },
+        complete:function(){
+          
+        }
+      });
+
     });
+ });
+
 </script>
+
 
 
 
@@ -30,11 +58,17 @@
 
         	<div class="col-md-3">
         	</div>
-        <div class="col-md-6">
+        <div class="col-md-6" >
 {% if error_msg %}
 <div class="alert alert-danger alert-dismissible" id="alert" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     <strong>Danger!</strong> {{error_msg}}
+  </div>
+  {% endif %}
+  {% if error %}
+<div class="alert alert-danger alert-dismissible" id="alert" >
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Danger!</strong> {{error}}
   </div>
   {% endif %}
 
@@ -64,27 +98,46 @@
                     {% endif %}
                     <form class="form-horizontal" role="form" action="{% url 'user:index' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        
+                                  <div class="form-group">
+                                   <label class="control-label col-sm-2" for="labels">
+                              Folder: <a class='my-tool-tip' data-toggle="tooltip" data-placement="left"
+                               title="Specify the name of folder in which document will be submitted"> <!-- The class CANNOT be tooltip... -->
+                <i class='glyphicon glyphicon-info-sign'></i>
+            </a>
+                            </label>
 
+           
+     
+                                 <div class="col-sm-10">
+                                  
+                              <select  name="labels" id="folder">
+                              {% for item in labels%}
+                              <option>{{item.label}}</option>
+                              {% endfor %}
+                                
+                              </select>
+                                 </div>
+                        </div>
+                        <div id="duplicates" style="color: red"></div>
                           <div class="form-group">
-                            <label class="control-label col-sm-2" for="title">
+                            <label class="control-label col-md-2" for="title">
                                 Title:
                             </label>
-                            <div class=" bootstrap-tagsinput">
+                            <div class="col-md-10 tagsinput ">
                                 {{form.title}}
                             </div>
                         </div>
 
                           <div class="form-group">
                             <label class="control-label col-sm-2" for="author">
-                                Author:<span style="color: red">*</span>
+                                Author:
                             </label>
                             <div class="col-sm-10">
                             {% if form.author|length > 1 %}
                             {{form.author}}
 
                             {% else %}
-                      <input type="text" class="form-control" value="" data-role="tagsinput" name="author" placeholder="Add Author"/>
+                      <input type="text" class="form-control" value="{{author}}" data-role="tagsinput" name="author" placeholder="Add Author"/>
                         {% endif %}
                             </div>
                         </div>
@@ -119,7 +172,10 @@
 
                           <div class="form-group">
                             <label class="control-label col-sm-2" for="document">
-                                Document:<span style="color: red">*</span>
+                                Document:<span style="color: red">*</span><a class='my-tool-tip' data-toggle="tooltip" data-placement="left"
+                               title="only .pdf .doc and .docx type documents are allowed"> <!-- The class CANNOT be tooltip... -->
+                <i class='glyphicon glyphicon-info-sign'></i>
+            </a>
                             </label>
                             <div class="col-sm-10">
                                 {{form.document}}
@@ -129,7 +185,10 @@
 
                         <div class="form-group">
                             <label class="control-label col-sm-2" for="visibilty">
-                                Protection:
+                                Protection:<a class='my-tool-tip' data-toggle="tooltip" data-placement="left"
+                               title="Document marked as PRIVATE will not be visible in other users search results"> <!-- The class CANNOT be tooltip... -->
+                <i class='glyphicon glyphicon-info-sign'></i>
+            </a>
                             </label>
                             <div class="col-sm-10">
                                 {{form.visibilty}}
@@ -139,7 +198,11 @@
 
                           <div class="form-group">
                             <label class="control-label col-sm-2" for="author">
-                                Tags:
+                                Keywords:
+                                <a class='my-tool-tip' data-toggle="tooltip" data-placement="left"
+                               title="Give important Keywords related to the document "> <!-- The class CANNOT be tooltip... -->
+                <i class='glyphicon glyphicon-info-sign'></i>
+            </a>
                             </label>
                             <div class="col-sm-10">
                           
@@ -147,20 +210,7 @@
                       </div>
                       </div>
 
-                        <div class="form-group">
-                                   <label class="control-label col-sm-2" for="labels">
-                              Folder:
-                            </label>
-                                 <div class="col-sm-10">
-                                  
-                              <select  name="labels">
-                              {% for item in labels%}
-                              <option>{{item.label}}</option>
-                              {% endfor %}
-                                
-                              </select>
-                                 </div>
-                        </div>
+              
                        
                             
                         {% if error_msg %}
@@ -185,7 +235,12 @@
         </div>
     </div>
 </div>
- 
+ <script type="text/javascript">
+    $('#id_documnet').on('change',function(){
+  //    alert("hi");
+        $('#bibtex').click();
+    });
+</script>
 {% endblock %}
 
 

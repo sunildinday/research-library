@@ -653,28 +653,6 @@
 
 
 
-$( document ).ready( function() {
- $('#id_title').keyup(function () {
-      var title = $(this).val();
-        var author=$("#id_author").val();
-      if(title!='')
-      $.ajax({
-        url: "{% url 'user:checker' %}",
-        data: {
-          'title': title,
-          
-        },
-        dataType: 'json',
-        success: function (data) {
-          var answer=data['msg']
-         // alert(data['msg']);
-
-          $('#duplicates').html( answer);
-        }
-      });
-
-    });
- });
 
 
 
